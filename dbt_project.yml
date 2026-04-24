@@ -35,11 +35,4 @@ models:
     example:
       +materialized: view
 
-flags:
-  require_resource_names_without_spaces: true
-  source_freshness_run_project_hooks: true
-  skip_nodes_if_on_run_start_fails: true
-  state_modified_compare_more_unrendered_values: true
-  warn_error_options:
-    silence:
-      - MissingArgumentsPropertyInGenericTestDeprecation
+
