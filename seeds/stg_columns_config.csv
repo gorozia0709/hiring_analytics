@@ -1,0 +1,60 @@
+raw_table_name,raw_column_name,target_column_name,target_data_type,target_order_num,transform_expr
+candidates,_offset,_offset,bigint,1,cast(_offset as bigint)
+candidates,candidate_id,id,varchar,2,candidate_id
+candidates,primary_skill_id,primary_skill_id,varchar,3,primary_skill_id
+candidates,job_function_id,job_function_id,varchar,4,job_function_id
+candidates,staffing_status,staffing_status,varchar,5,staffing_status
+candidates,english_level,english_level,varchar,6,english_level
+candidates,_created_micros,created_at,timestamp_ntz,7,to_timestamp_ntz(_created_micros::number/1000000)
+candidates,_updated_micros,updated_at,timestamp_ntz,8,to_timestamp_ntz(_updated_micros::number/1000000)
+employees,_offset,_offset,bigint,1,cast(_offset as bigint)
+employees,employee_id,id,varchar,2,employee_id
+employees,job_function_id,job_function_id,varchar,3,job_function_id
+employees,primary_skill_id,primary_skill_id,varchar,4,primary_skill_id
+employees,production_category,production_category,varchar,5,production_category
+employees,employment_status,employment_status,varchar,6,employment_status
+employees,org_category,org_category,varchar,7,org_category
+employees,org_category_type,org_category_type,varchar,8,org_category_type
+employees,work_start_micros,work_start_date,date,9,to_date(to_timestamp_ntz(work_start_micros::number/1000000))
+employees,work_end_micros,work_end_date,date,10,to_date(to_timestamp_ntz(work_end_micros::number/1000000))
+employees,is_active,is_active,boolean,11,try_to_boolean(is_active)
+employees,_created_micros,created_at,timestamp_ntz,12,to_timestamp_ntz(_created_micros::number/1000000)
+employees,_updated_micros,updated_at,timestamp_ntz,13,to_timestamp_ntz(_updated_micros::number/1000000)
+interviews,_offset,_offset,bigint,1,cast(_offset as bigint)
+interviews,id,id,varchar,2,id
+interviews,candidate_id,candidate_id,varchar,3,candidate_id
+interviews,candidate_type,candidate_type,varchar,4,candidate_type
+interviews,status,status,varchar,5,"case when lower(status) like '%scheduled%' then 'scheduled' when lower(status) like '%in_progress%' then 'in_progress' when lower(status) like '%pending_feedback%' then 'pending_feedback' when lower(status) like '%completed%' then 'completed' when lower(status) like '%cancelled%' then 'cancelled' when lower(status) like '%requested%' then 'requested' else lower(status) end"
+interviews,interviewer_id,interviewer_id,varchar,6,interviewer_id
+interviews,location,location,varchar,7,location
+interviews,logged,is_logged,boolean,8,try_to_boolean(logged)
+interviews,media_available,is_media_available,boolean,9,try_to_boolean(media_available)
+interviews,run_type,run_type,varchar,10,run_type
+interviews,type,type,varchar,11,type
+interviews,media_status,media_status,varchar,12,media_status
+interviews,invite_answer_status,invite_answer_status,varchar,13,invite_answer_status
+interviews,_created_micros,created_at,timestamp_ntz,14,to_timestamp_ntz(_created_micros::number/1000000)
+interviews,_updated_micros,updated_at,timestamp_ntz,15,to_timestamp_ntz(_updated_micros::number/1000000)
+job_functions,_offset,_offset,bigint,1,cast(_offset as bigint)
+job_functions,job_function_id,id,varchar,2,job_function_id
+job_functions,base_name,base_name,varchar,3,base_name
+job_functions,category,category,varchar,4,category
+job_functions,is_active,is_active,boolean,5,try_to_boolean(is_active)
+job_functions,level,level,integer,6,try_to_number(level)
+job_functions,track,track,varchar,7,track
+job_functions,seniority_level,seniority_level,varchar,8,seniority_level
+job_functions,seniority_index,seniority_index,integer,9,try_to_number(seniority_index)
+job_functions,_created_micros,created_at,timestamp_ntz,10,to_timestamp_ntz(_created_micros::number/1000000)
+job_functions,_updated_micros,updated_at,timestamp_ntz,11,to_timestamp_ntz(_updated_micros::number/1000000)
+skills,_offset,_offset,bigint,1,cast(_offset as bigint)
+skills,id,id,varchar,2,id
+skills,is_active,is_active,boolean,3,try_to_boolean(is_active)
+skills,is_primary,is_primary,boolean,4,try_to_boolean(is_primary)
+skills,is_key,is_key,boolean,5,try_to_boolean(is_key)
+skills,is_key_reason,is_key_reason,varchar,6,is_key_reason
+skills,type,type,varchar,7,type
+skills,name,name,varchar,8,name
+skills,url,url,varchar,9,url
+skills,parent_id,parent_id,varchar,10,parent_id
+skills,_created_micros,created_at,timestamp_ntz,11,to_timestamp_ntz(_created_micros::number/1000000)
+skills,_updated_micros,updated_at,timestamp_ntz,12,to_timestamp_ntz(_updated_micros::number/1000000)

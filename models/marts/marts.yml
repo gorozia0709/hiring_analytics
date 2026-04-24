@@ -1,0 +1,179 @@
+version: 2
+
+models:
+  - name: fct_interview
+    description: "{{ doc('fct_interview_definition') }}"
+    columns:
+      - name: id
+        description: Unique identifier of the interview. Each row in this table represents one interview.
+        tests:
+          - unique
+          - not_null
+
+      - name: candidate_type
+        description: Describes what kind of candidate is taking part in the interview.
+
+      - name: candidate_offset
+        description: Link to the candidate record that was valid when the interview was created.
+
+      - name: interviewer_offset
+        description: Link to the employee record that was valid when the interview was created.
+
+      - name: location
+        description: Place where the interview happened, for example online or in person.
+
+      - name: is_logged
+        description: Shows whether the interview was recorded in the system.
+
+      - name: is_media_available
+        description: Shows whether interview media, such as video or audio, is available.
+
+      - name: run_type
+        description: Describes the type of interview run.
+
+      - name: type
+        description: Describes the interview category.
+
+      - name: media_status
+        description: Current state of the interview media.
+
+      - name: invite_answer_status
+        description: Candidate response to the interview invitation.
+
+      - name: status
+        description: Latest known interview status.
+
+      - name: created_date
+        description: Calendar date when the interview was first created.
+
+      - name: created_datetime
+        description: Exact timestamp when the interview was first created.
+
+      - name: requested_datetime
+        description: Time when the interview first entered the requested step.
+
+      - name: scheduled_datetime
+        description: Time when the interview first entered the scheduled step.
+
+      - name: started_datetime
+        description: Time when the interview first entered the in-progress step.
+
+      - name: finished_datetime
+        description: Time when the interview first entered the pending feedback step.
+
+      - name: feedback_provided_datetime
+        description: Time when the interview first entered the completed step.
+
+      - name: cancelled_datetime
+        description: Time when the interview first entered the cancelled step.
+
+      - name: interview_duration
+        description: Time in minutes between the start of the interview and the moment it moved to pending feedback.
+
+      - name: feedback_delay
+        description: Time in minutes between pending feedback and completed.
+
+  - name: dim_candidate
+    description: One row per candidate version, used to describe candidates at the correct point in time.
+
+  - name: dim_employee
+    description: One row per employee version, used to describe interviewers at the correct point in time.
+
+  - name: dim_job_function
+    description: Lookup table describing role families, levels and seniority.
+
+  - name: dim_primary_skill
+    description: Lookup table describing primary skills linked to candidates and employees.
+
+  - name: dim_date
+    description: Calendar table used for date-based reporting and filtering.
+
+unit_tests:
+  - name: test_fct_interview_full_lifecycle
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews')
+        rows:
+          - {id: 'i1', candidate_id: 'c1', interviewer_id: 'e1', candidate_type: 'internal', status: 'requested', created_at: '2024-01-01 09:00:00', updated_at: '2024-01-01 09:00:00', row_valid_from: '2024-01-01 09:00:00', row_valid_to: '2024-01-01 10:00:00', _offset: 1, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+          - {id: 'i1', candidate_id: 'c1', interviewer_id: 'e1', candidate_type: 'internal', status: 'scheduled', created_at: '2024-01-01 09:00:00', updated_at: '2024-01-01 10:00:00', row_valid_from: '2024-01-01 10:00:00', row_valid_to: '2024-01-01 11:00:00', _offset: 2, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+          - {id: 'i1', candidate_id: 'c1', interviewer_id: 'e1', candidate_type: 'internal', status: 'in_progress', created_at: '2024-01-01 09:00:00', updated_at: '2024-01-01 11:00:00', row_valid_from: '2024-01-01 11:00:00', row_valid_to: '2024-01-01 12:00:00', _offset: 3, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+          - {id: 'i1', candidate_id: 'c1', interviewer_id: 'e1', candidate_type: 'internal', status: 'pending_feedback', created_at: '2024-01-01 09:00:00', updated_at: '2024-01-01 12:00:00', row_valid_from: '2024-01-01 12:00:00', row_valid_to: '2024-01-01 13:30:00', _offset: 4, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+          - {id: 'i1', candidate_id: 'c1', interviewer_id: 'e1', candidate_type: 'internal', status: 'completed', created_at: '2024-01-01 09:00:00', updated_at: '2024-01-01 13:30:00', row_valid_from: '2024-01-01 13:30:00', row_valid_to: null, _offset: 5, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+
+      - input: ref('stg_latest_interviews')
+        rows:
+          - {id: 'i1', candidate_id: 'c1', interviewer_id: 'e1', candidate_type: 'internal', status: 'completed', created_at: '2024-01-01 09:00:00', updated_at: '2024-01-01 13:30:00', _offset: 5, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+
+      - input: ref('dim_candidate')
+        rows:
+          - {id: 'c1', _offset: 101, valid_from_datetime: '2023-12-01 00:00:00', valid_to_datetime: '9999-12-31 23:59:59'}
+
+      - input: ref('dim_employee')
+        rows:
+          - {id: 'e1', _offset: 201, valid_from_datetime: '2023-12-01 00:00:00', valid_to_datetime: '9999-12-31 23:59:59'}
+
+      - input: ref('dim_date')
+        rows:
+          - {date: '2024-01-01'}
+
+    expect:
+      rows:
+        - {id: 'i1', status: 'completed', candidate_offset: 101, interviewer_offset: 201, created_date: '2024-01-01', created_datetime: '2024-01-01 09:00:00', requested_datetime: '2024-01-01 09:00:00', scheduled_datetime: '2024-01-01 10:00:00', started_datetime: '2024-01-01 11:00:00', finished_datetime: '2024-01-01 12:00:00', feedback_provided_datetime: '2024-01-01 13:30:00', interview_duration: 60, feedback_delay: 90}
+
+  - name: test_fct_interview_offline_no_in_progress
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews')
+        rows:
+          - {id: 'i2', candidate_id: 'c2', interviewer_id: 'e2', candidate_type: 'external', status: 'scheduled', created_at: '2024-02-01 09:00:00', updated_at: '2024-02-01 09:00:00', row_valid_from: '2024-02-01 09:00:00', row_valid_to: '2024-02-01 10:00:00', _offset: 1, location: 'office', is_logged: false, is_media_available: false, run_type: 'standard', type: 'hr', media_status: null, invite_answer_status: 'accepted'}
+          - {id: 'i2', candidate_id: 'c2', interviewer_id: 'e2', candidate_type: 'external', status: 'pending_feedback', created_at: '2024-02-01 09:00:00', updated_at: '2024-02-01 10:00:00', row_valid_from: '2024-02-01 10:00:00', row_valid_to: '2024-02-02 10:00:00', _offset: 2, location: 'office', is_logged: false, is_media_available: false, run_type: 'standard', type: 'hr', media_status: null, invite_answer_status: 'accepted'}
+          - {id: 'i2', candidate_id: 'c2', interviewer_id: 'e2', candidate_type: 'external', status: 'completed', created_at: '2024-02-01 09:00:00', updated_at: '2024-02-02 10:00:00', row_valid_from: '2024-02-02 10:00:00', row_valid_to: null, _offset: 3, location: 'office', is_logged: false, is_media_available: false, run_type: 'standard', type: 'hr', media_status: null, invite_answer_status: 'accepted'}
+
+      - input: ref('stg_latest_interviews')
+        rows:
+          - {id: 'i2', candidate_id: 'c2', interviewer_id: 'e2', candidate_type: 'external', status: 'completed', created_at: '2024-02-01 09:00:00', updated_at: '2024-02-02 10:00:00', _offset: 3, location: 'office', is_logged: false, is_media_available: false, run_type: 'standard', type: 'hr', media_status: null, invite_answer_status: 'accepted'}
+
+      - input: ref('dim_candidate')
+        rows:
+          - {id: 'c2', _offset: 102, valid_from_datetime: '2024-01-01 00:00:00', valid_to_datetime: '9999-12-31 23:59:59'}
+
+      - input: ref('dim_employee')
+        rows:
+          - {id: 'e2', _offset: 202, valid_from_datetime: '2024-01-01 00:00:00', valid_to_datetime: '9999-12-31 23:59:59'}
+
+      - input: ref('dim_date')
+        rows:
+          - {date: '2024-02-01'}
+
+    expect:
+      rows:
+        - {id: 'i2', status: 'completed', candidate_offset: 102, interviewer_offset: 202, created_date: '2024-02-01', created_datetime: '2024-02-01 09:00:00', started_datetime: null, finished_datetime: '2024-02-01 10:00:00', feedback_provided_datetime: '2024-02-02 10:00:00', interview_duration: null, feedback_delay: 1440}
+
+  - name: test_fct_interview_asof_dimension_join
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews')
+        rows:
+          - {id: 'i3', candidate_id: 'c3', interviewer_id: 'e3', candidate_type: 'internal', status: 'scheduled', created_at: '2024-03-10 09:00:00', updated_at: '2024-03-10 09:00:00', row_valid_from: '2024-03-10 09:00:00', row_valid_to: null, _offset: 1, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+
+      - input: ref('stg_latest_interviews')
+        rows:
+          - {id: 'i3', candidate_id: 'c3', interviewer_id: 'e3', candidate_type: 'internal', status: 'scheduled', created_at: '2024-03-10 09:00:00', updated_at: '2024-03-10 09:00:00', _offset: 1, location: 'online', is_logged: true, is_media_available: true, run_type: 'standard', type: 'tech', media_status: 'available', invite_answer_status: 'accepted'}
+
+      - input: ref('dim_candidate')
+        rows:
+          - {id: 'c3', _offset: 301, valid_from_datetime: '2024-01-01 00:00:00', valid_to_datetime: '2024-03-15 00:00:00'}
+          - {id: 'c3', _offset: 302, valid_from_datetime: '2024-03-15 00:00:00', valid_to_datetime: '9999-12-31 23:59:59'}
+
+      - input: ref('dim_employee')
+        rows:
+          - {id: 'e3', _offset: 401, valid_from_datetime: '2024-01-01 00:00:00', valid_to_datetime: '2024-03-20 00:00:00'}
+          - {id: 'e3', _offset: 402, valid_from_datetime: '2024-03-20 00:00:00', valid_to_datetime: '9999-12-31 23:59:59'}
+
+      - input: ref('dim_date')
+        rows:
+          - {date: '2024-03-10'}
+
+    expect:
+      rows:
+        - {id: 'i3', candidate_offset: 301, interviewer_offset: 401, created_date: '2024-03-10', created_datetime: '2024-03-10 09:00:00'}

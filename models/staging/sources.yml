@@ -1,0 +1,277 @@
+version: 2
+
+sources:
+  - name: hiring_analytics
+    database: HIRING_ANALYTICS_DB
+    schema: DEV
+    description: Raw tables with data about candidates, employees, interviews, skills and job functions.
+
+    tables:
+      - name: candidates
+        description: "{{ doc('candidates') }}"
+        config:
+          loaded_at_field: "to_timestamp_ntz(to_numeric(_updated_micros) / 1000000)"
+          freshness:
+            warn_after: {count: 500, period: day}
+            error_after: {count: 600, period: day}
+        columns:
+          - name: _offset
+            description: Technical field used to track changes in the source system.
+            tests:
+              - not_null
+
+          - name: candidate_id
+            description: Unique identifier of the candidate.
+            tests:
+              - not_null
+
+          - name: primary_skill_id
+            description: ID of the candidate’s main skill.
+            tests:
+              - relationships:
+                  to: source('hiring_analytics', 'skills')
+                  field: id
+
+          - name: staffing_status
+            description: Current hiring or staffing status of the candidate.
+
+          - name: english_level
+            description: English language level of the candidate.
+
+          - name: job_function_id
+            description: ID of the job function related to the candidate.
+            tests:
+              - relationships:
+                  to: source('hiring_analytics', 'job_functions')
+                  field: job_function_id
+
+          - name: _created_micros
+            description: Time when the record was created, stored in microseconds.
+            tests:
+              - not_null
+
+          - name: _updated_micros
+            description: Time when the record was last updated, stored in microseconds.
+            tests:
+              - not_null
+
+      - name: employees
+        description: "{{ doc('employees') }}"
+        config:
+          loaded_at_field: "to_timestamp_ntz(to_numeric(_updated_micros) / 1000000)"
+          freshness:
+            warn_after: {count: 350, period: day}
+            error_after: {count: 500, period: day}
+        columns:
+          - name: _offset
+            description: Technical field used to track changes in the source system.
+            tests:
+              - not_null
+
+          - name: employee_id
+            description: Unique identifier of the employee.
+            tests:
+              - not_null
+
+          - name: job_function_id
+            description: ID of the employee’s job function.
+
+          - name: primary_skill_id
+            description: ID of the employee’s main skill.
+
+          - name: production_category
+            description: Category that describes the employee’s production role.
+
+          - name: employment_status
+            description: Current employment status.
+
+          - name: org_category
+            description: Main organizational category of the employee.
+
+          - name: org_category_type
+            description: Type of the organizational category.
+
+          - name: work_start_micros
+            description: Start date of work in microseconds format.
+
+          - name: work_end_micros
+            description: End date of work in microseconds format.
+
+          - name: is_active
+            description: Shows if the employee is currently active.
+
+          - name: _created_micros
+            description: Time when the record was created, stored in microseconds.
+            tests:
+              - not_null
+
+          - name: _updated_micros
+            description: Time when the record was last updated, stored in microseconds.
+            tests:
+              - not_null
+
+      - name: interviews
+        description: "{{ doc('interviews') }}"
+        config:
+          loaded_at_field: "to_timestamp_ntz(to_numeric(_updated_micros) / 1000000)"
+          freshness:
+            warn_after: {count: 100, period: day}
+            error_after: {count: 200, period: day}
+        columns:
+          - name: _offset
+            description: Technical field used to track changes in the source system.
+            tests:
+              - not_null
+
+          - name: id
+            description: Unique identifier of the interview.
+            tests:
+              - not_null
+
+          - name: candidate_type
+            description: Type of candidate who attends the interview.
+
+          - name: candidate_id
+            description: ID of the candidate.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('hiring_analytics', 'candidates')
+                  field: candidate_id
+
+          - name: status
+            description: Current status of the interview.
+            tests:
+              - not_null
+
+          - name: interviewer_id
+            description: ID of the interviewer.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('hiring_analytics', 'employees')
+                  field: employee_id
+
+          - name: location
+            description: Location where the interview takes place.
+
+          - name: logged
+            description: Shows if the interview was recorded in the system.
+
+          - name: media_available
+            description: Indicates if interview media, such as video or audio, is available.
+
+          - name: run_type
+            description: Type of interview run.
+
+          - name: type
+            description: Type of interview.
+
+          - name: media_status
+            description: Status of the interview media.
+
+          - name: invite_answer_status
+            description: Status of the candidate’s response to the interview invitation.
+
+          - name: _created_micros
+            description: Time when the record was created, stored in microseconds.
+            tests:
+              - not_null
+
+          - name: _updated_micros
+            description: Time when the record was last updated, stored in microseconds.
+            tests:
+              - not_null
+
+      - name: job_functions
+        description: This table describes job roles, including category, level and seniority.
+        columns:
+          - name: _offset
+            description: Technical field used to track changes in the source system.
+            tests:
+              - not_null
+
+          - name: job_function_id
+            description: Unique identifier of the job function.
+            tests:
+              - not_null
+
+          - name: base_name
+            description: Base name of the job role.
+
+          - name: category
+            description: Category of the job function.
+
+          - name: is_active
+            description: Shows if the job function is active.
+
+          - name: level
+            description: Level of the job role.
+
+          - name: track
+            description: Career track of the job function.
+
+          - name: seniority_level
+            description: Seniority level of the job.
+
+          - name: seniority_index
+            description: Numeric value that represents seniority.
+
+          - name: _created_micros
+            description: Time when the record was created, stored in microseconds.
+            tests:
+              - not_null
+
+          - name: _updated_micros
+            description: Time when the record was last updated, stored in microseconds.
+            tests:
+              - not_null
+
+      - name: skills
+        description: This table contains information about skills, including hierarchy and classification.
+        columns:
+          - name: _offset
+            description: Technical field used to track changes in the source system.
+            tests:
+              - not_null
+
+          - name: id
+            description: Unique identifier of the skill.
+            tests:
+              - not_null
+
+          - name: is_active
+            description: Shows if the skill is active.
+
+          - name: is_primary
+            description: Indicates if the skill is a primary skill.
+
+          - name: is_key
+            description: Indicates if the skill is considered important.
+
+          - name: is_key_reason
+            description: Explanation of why the skill is marked as important.
+
+          - name: type
+            description: Type of the skill.
+
+          - name: name
+            description: Name of the skill.
+            tests:
+              - not_null
+
+          - name: url
+            description: Link to more information about the skill.
+
+          - name: parent_id
+            description: ID of the parent skill, if there is one.
+
+          - name: _created_micros
+            description: Time when the record was created, stored in microseconds.
+            tests:
+              - not_null
+
+          - name: _updated_micros
+            description: Time when the record was last updated, stored in microseconds.
+            tests:
+              - not_null
