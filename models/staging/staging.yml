@@ -8,39 +8,54 @@ models:
         description: Technical row identifier used to distinguish historical versions.
         tests:
           - not_null
+
       - name: id
         description: Candidate business identifier.
         tests:
           - not_null
+
       - name: created_at
         description: Time when the candidate record was first created in the source.
         tests:
           - not_null
+
       - name: updated_at
         description: Time when this version of the candidate was updated.
         tests:
           - not_null
+
       - name: row_valid_from
         description: "{{ doc('row_valid_from') }}"
         tests:
           - not_null
+
       - name: row_valid_to
         description: "{{ doc('row_valid_to') }}"
+
       - name: row_is_active
         description: Flag showing whether this is the current version of the candidate.
         tests:
           - not_null
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+
     tests:
       - dbt_utils.expression_is_true:
-          expression: "row_valid_from <= row_valid_to"
+          arguments:
+            expression: "row_valid_from <= row_valid_to"
+
       - dbt_expectations.expect_compound_columns_to_be_unique:
-          column_list: ["id", "_offset"]
+          arguments:
+            column_list: ["id", "_offset"]
+
       - one_active_row:
-          key_column: id
-          active_column: row_is_active
+          arguments:
+            key_column: id
+            active_column: row_is_active
+
       - valid_to_for_inactive_rows
+
 
   - name: stg_employees
     description: Cleaned historical view of employee records. Keeps employee history over time and adds validity fields for version tracking.
@@ -49,44 +64,61 @@ models:
         description: Technical row identifier used to distinguish historical versions.
         tests:
           - not_null
+
       - name: id
         description: Employee business identifier.
         tests:
           - not_null
+
       - name: created_at
         description: Time when the employee record was first created in the source.
         tests:
           - not_null
+
       - name: updated_at
         description: Time when this version of the employee was updated.
         tests:
           - not_null
+
       - name: row_valid_from
         description: "{{ doc('row_valid_from') }}"
         tests:
           - not_null
+
       - name: row_valid_to
         description: "{{ doc('row_valid_to') }}"
+
       - name: row_is_active
         description: Flag showing whether this is the current version of the employee.
         tests:
           - not_null
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+
       - name: is_active
         description: Flag showing whether the employee is active in the business.
         tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
+
     tests:
       - dbt_utils.expression_is_true:
-          expression: "row_valid_from <= row_valid_to"
+          arguments:
+            expression: "row_valid_from <= row_valid_to"
+
       - dbt_expectations.expect_compound_columns_to_be_unique:
-          column_list: ["id", "_offset"]
+          arguments:
+            column_list: ["id", "_offset"]
+
       - one_active_row:
-          key_column: id
-          active_column: row_is_active
+          arguments:
+            key_column: id
+            active_column: row_is_active
+
       - valid_to_for_inactive_rows
+
 
   - name: stg_interviews
     description: Cleaned historical view of interview records.
@@ -95,69 +127,92 @@ models:
         description: Technical row identifier used to distinguish historical versions.
         tests:
           - not_null
+
       - name: id
         description: Interview business identifier.
         tests:
           - not_null
+
       - name: candidate_id
         description: Candidate linked to the interview.
         tests:
           - not_null
+
       - name: interviewer_id
         description: Employee linked to the interview as interviewer.
         tests:
           - not_null
+
       - name: status
         description: Current status of the interview
         tests:
           - not_null
           - accepted_values:
-              values:
-                - requested
-                - scheduled
-                - in_progress
-                - pending_feedback
-                - completed
-                - cancelled
+              arguments:
+                values:
+                  - requested
+                  - scheduled
+                  - in_progress
+                  - pending_feedback
+                  - completed
+                  - cancelled
+
       - name: is_logged
         description: Flag showing whether the interview was logged in the system.
         tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
+
       - name: is_media_available
         description: Flag showing whether interview media is available.
         tests:
           - accepted_values:
-              values: [true, false]
+              arguments:
+                values: [true, false]
+
       - name: created_at
         description: Time when the interview was first created in the source.
         tests:
           - not_null
+
       - name: updated_at
         description: Time when this interview version was updated.
         tests:
           - not_null
+
       - name: row_valid_from
         description: "{{ doc('row_valid_from') }}"
         tests:
           - not_null
+
       - name: row_valid_to
         description: "{{ doc('row_valid_to') }}"
+
       - name: row_is_active
         description: Flag showing whether this is the latest interview version.
         tests:
           - not_null
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+
     tests:
       - dbt_utils.expression_is_true:
-          expression: "row_valid_from <= row_valid_to"
+          arguments:
+            expression: "row_valid_from <= row_valid_to"
+
       - dbt_expectations.expect_compound_columns_to_be_unique:
-          column_list: ["id", "_offset"]
+          arguments:
+            column_list: ["id", "_offset"]
+
       - one_active_row:
-          key_column: id
-          active_column: row_is_active
+          arguments:
+            key_column: id
+            active_column: row_is_active
+
       - valid_to_for_inactive_rows
+
 
   - name: stg_job_functions
     description: Cleaned historical view of job function records.
@@ -166,39 +221,54 @@ models:
         description: Technical row identifier used to distinguish historical versions.
         tests:
           - not_null
+
       - name: id
         description: Job function business identifier.
         tests:
           - not_null
+
       - name: created_at
         description: Time when the job function record was first created in the source.
         tests:
           - not_null
+
       - name: updated_at
         description: Time when this version of the job function was updated.
         tests:
           - not_null
+
       - name: row_valid_from
         description: "{{ doc('row_valid_from') }}"
         tests:
           - not_null
+
       - name: row_valid_to
         description: "{{ doc('row_valid_to') }}"
+
       - name: row_is_active
         description: Flag showing whether this is the current version of the job function.
         tests:
           - not_null
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+
     tests:
       - dbt_utils.expression_is_true:
-          expression: "row_valid_from <= row_valid_to"
+          arguments:
+            expression: "row_valid_from <= row_valid_to"
+
       - dbt_expectations.expect_compound_columns_to_be_unique:
-          column_list: ["id", "_offset"]
+          arguments:
+            column_list: ["id", "_offset"]
+
       - one_active_row:
-          key_column: id
-          active_column: row_is_active
+          arguments:
+            key_column: id
+            active_column: row_is_active
+
       - valid_to_for_inactive_rows
+
 
   - name: stg_skills
     description: Cleaned historical view of skill records.
@@ -207,39 +277,54 @@ models:
         description: Technical row identifier used to distinguish historical versions.
         tests:
           - not_null
+
       - name: id
         description: Skill business identifier.
         tests:
           - not_null
+
       - name: created_at
         description: Time when the skill record was first created in the source.
         tests:
           - not_null
+
       - name: updated_at
         description: Time when this version of the skill was updated.
         tests:
           - not_null
+
       - name: row_valid_from
         description: "{{ doc('row_valid_from') }}"
         tests:
           - not_null
+
       - name: row_valid_to
         description: "{{ doc('row_valid_to') }}"
+
       - name: row_is_active
         description: Flag showing whether this is the current version of the skill.
         tests:
           - not_null
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+
     tests:
       - dbt_utils.expression_is_true:
-          expression: "row_valid_from <= row_valid_to"
+          arguments:
+            expression: "row_valid_from <= row_valid_to"
+
       - dbt_expectations.expect_compound_columns_to_be_unique:
-          column_list: ["id", "_offset"]
+          arguments:
+            column_list: ["id", "_offset"]
+
       - one_active_row:
-          key_column: id
-          active_column: row_is_active
+          arguments:
+            key_column: id
+            active_column: row_is_active
+
       - valid_to_for_inactive_rows
+
 
   - name: stg_latest_candidates
     description: "{{ doc('latest_staging_model_definition') }}"
