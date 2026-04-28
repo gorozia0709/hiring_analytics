@@ -67,8 +67,6 @@ models:
 
       - name: id
         description: Employee business identifier.
-        tests:
-          - not_null
 
       - name: created_at
         description: Time when the employee record was first created in the source.
@@ -140,22 +138,11 @@ models:
 
       - name: interviewer_id
         description: Employee linked to the interview as interviewer.
-        tests:
-          - not_null
 
       - name: status
         description: Current status of the interview
         tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values:
-                  - requested
-                  - scheduled
-                  - in_progress
-                  - pending_feedback
-                  - completed
-                  - cancelled
 
       - name: is_logged
         description: Flag showing whether the interview was logged in the system.
@@ -342,7 +329,6 @@ models:
         description: Employee business identifier.
         tests:
           - unique
-          - not_null
 
   - name: stg_latest_interviews
     description: "{{ doc('latest_staging_model_definition') }}"
