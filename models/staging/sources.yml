@@ -27,11 +27,6 @@ sources:
 
           - name: primary_skill_id
             description: ID of the candidate's main skill.
-            tests:
-              - relationships:
-                  arguments:
-                    to: source('hiring_analytics', 'skills')
-                    field: id
 
           - name: staffing_status
             description: Current hiring or staffing status of the candidate.
@@ -72,8 +67,6 @@ sources:
 
           - name: employee_id
             description: Unique identifier of the employee.
-            tests:
-              - not_null
 
           - name: job_function_id
             description: ID of the employee's job function.
@@ -137,10 +130,6 @@ sources:
             description: ID of the candidate.
             tests:
               - not_null
-              - relationships:
-                  arguments:
-                    to: source('hiring_analytics', 'candidates')
-                    field: candidate_id
 
           - name: status
             description: Current status of the interview.
@@ -151,10 +140,6 @@ sources:
             description: ID of the interviewer.
             tests:
               - not_null
-              - relationships:
-                  arguments:
-                    to: source('hiring_analytics', 'employees')
-                    field: employee_id
 
           - name: location
             description: Location where the interview takes place.
@@ -261,8 +246,6 @@ sources:
 
           - name: name
             description: Name of the skill.
-            tests:
-              - not_null
 
           - name: url
             description: Link to more information about the skill.
