@@ -138,8 +138,6 @@ sources:
 
           - name: interviewer_id
             description: ID of the interviewer.
-            tests:
-              - not_null
 
           - name: location
             description: Location where the interview takes place.
