@@ -26,11 +26,12 @@ sources:
               - not_null
 
           - name: primary_skill_id
-            description: ID of the candidate’s main skill.
+            description: ID of the candidate's main skill.
             tests:
               - relationships:
-                  to: source('hiring_analytics', 'skills')
-                  field: id
+                  arguments:
+                    to: source('hiring_analytics', 'skills')
+                    field: id
 
           - name: staffing_status
             description: Current hiring or staffing status of the candidate.
@@ -42,8 +43,9 @@ sources:
             description: ID of the job function related to the candidate.
             tests:
               - relationships:
-                  to: source('hiring_analytics', 'job_functions')
-                  field: job_function_id
+                  arguments:
+                    to: source('hiring_analytics', 'job_functions')
+                    field: job_function_id
 
           - name: _created_micros
             description: Time when the record was created, stored in microseconds.
@@ -74,13 +76,13 @@ sources:
               - not_null
 
           - name: job_function_id
-            description: ID of the employee’s job function.
+            description: ID of the employee's job function.
 
           - name: primary_skill_id
-            description: ID of the employee’s main skill.
+            description: ID of the employee's main skill.
 
           - name: production_category
-            description: Category that describes the employee’s production role.
+            description: Category that describes the employee's production role.
 
           - name: employment_status
             description: Current employment status.
@@ -136,8 +138,9 @@ sources:
             tests:
               - not_null
               - relationships:
-                  to: source('hiring_analytics', 'candidates')
-                  field: candidate_id
+                  arguments:
+                    to: source('hiring_analytics', 'candidates')
+                    field: candidate_id
 
           - name: status
             description: Current status of the interview.
@@ -149,8 +152,9 @@ sources:
             tests:
               - not_null
               - relationships:
-                  to: source('hiring_analytics', 'employees')
-                  field: employee_id
+                  arguments:
+                    to: source('hiring_analytics', 'employees')
+                    field: employee_id
 
           - name: location
             description: Location where the interview takes place.
@@ -171,7 +175,7 @@ sources:
             description: Status of the interview media.
 
           - name: invite_answer_status
-            description: Status of the candidate’s response to the interview invitation.
+            description: Status of the candidate's response to the interview invitation.
 
           - name: _created_micros
             description: Time when the record was created, stored in microseconds.
